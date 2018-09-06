@@ -2,7 +2,7 @@
 
 ## Initial Project: Spanish Patience Solver
 
-The aim of this project is to create two basic libraries and two applications.
+The aim of this project is to create two basic libraries and two applications:
 
 - **pip_core:** a core solitaire library
 - **pip_search:** a library for searching solitaire deals
