@@ -1,3 +1,8 @@
+extern crate pip_app;
+
+use pip_app::hello_world;
+
 fn main() {
-    println!("Hello, world!");
+    let s = hello_world();
+    println!("{}", s);
 }
