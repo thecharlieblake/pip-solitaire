@@ -5,9 +5,4 @@ os:
 - linux
 - osx
 rust:
-- nightly
-- beta
 - stable
-script:
-- cargo build
-- cargo test
