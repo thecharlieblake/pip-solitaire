@@ -14,7 +14,9 @@
 /// This is just some test doc
 ///
 /// ```
-/// assert_eq!(hello_world(), "Xello World!");
+/// use pip_app::lib_mod::hello_world;
+///
+/// assert_eq!(hello_world(), "Hello World!");
 /// ```
 ///
 pub mod lib_mod {
@@ -28,7 +30,7 @@ pub mod lib_mod {
 
 #[cfg(test)]
 mod tests {
-    use super::*;
+    use super::lib_mod::*;
 
     #[test]
     fn unit_test() {

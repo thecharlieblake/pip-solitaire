@@ -1,6 +1,6 @@
 extern crate pip_app;
 
-use pip_app::hello_world;
+use pip_app::lib_mod::hello_world;
 
 #[test]
 fn integration_test() {
