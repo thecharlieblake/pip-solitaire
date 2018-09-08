@@ -1,5 +1,7 @@
 # pip-solitaire
 
+[![Build Status](https://travis-ci.com/thecharlesblake/pip-solitaire.svg?branch=master)](https://travis-ci.com/thecharlesblake/pip-solitaire)
+
 ## Initial Project: Spanish Patience Solver
 
 The aim of this project is to create two basic libraries and two applications:
