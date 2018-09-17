@@ -1,6 +1,8 @@
 # pip-solitaire
 
 [![Build Status](https://travis-ci.com/thecharlesblake/pip-solitaire.svg?branch=master)](https://travis-ci.com/thecharlesblake/pip-solitaire)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+
 
 ## Initial Project: Spanish Patience Solver
 
