@@ -1,39 +1,31 @@
-//!
-//! # Crate test
-//!
-//! Testing
-//!
-//! ## Well...
-//!
-//! This is some more doc text
-//!
+///
+/// # Library module for pip_app
+///
 
-///
-/// # An example of a library module
-///
-/// This is just some test doc
-///
-/// ```
-/// use pip_app::lib_mod::hello_world;
-///
-/// assert_eq!(hello_world(), "Hello World!");
-/// ```
-///
-pub mod lib_mod {
+extern crate clap;
+
+pub mod app_lib {
+
+    use clap::ArgMatches;
+
+    use std::result::Result::Ok;
+
     ///
-    /// fn comment for *hello world* fn
+    /// Runs the main application
     ///
-    pub fn hello_world() -> String {
-        String::from("Hello World!")
+    pub fn run(_matches: ArgMatches) -> Result<(), ()> {
+        Ok(())
     }
 }
 
 #[cfg(test)]
 mod tests {
-    use super::lib_mod::*;
+    use super::app_lib::*;
+
+    use clap::ArgMatches;
 
     #[test]
-    fn unit_test() {
-        assert_eq!(hello_world(), "Hello World!");
+    fn run_returns_ok() {
+        assert_eq!(Ok(()), run(ArgMatches::default()));
     }
 }

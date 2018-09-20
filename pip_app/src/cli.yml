@@ -1,0 +1,12 @@
+name: pip-app
+version: "1.0"
+author: Charlie Blake <thecharlesblake@live.co.uk>
+about: An application for solving solitaire deals
+args:
+    - config:
+        short: s
+        long: seed
+        value_name: SEED_VALUE
+        help: Sets a random seed to be solved
+        takes_value: true
+        required: true
