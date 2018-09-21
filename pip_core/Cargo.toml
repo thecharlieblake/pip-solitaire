@@ -1,9 +1,7 @@
 [package]
 
-name = "pip_app"
+name = "pip_core"
 version = "0.1.0"
 authors = ["thecharlesblake <thecharlesblake@live.co.uk>"]
 
 [dependencies]
-
-pip_core = { path = "../pip_core" }

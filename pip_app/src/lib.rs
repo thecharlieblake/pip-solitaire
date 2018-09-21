@@ -1,12 +1,11 @@
-pub mod app_mod {
+extern crate pip_core;
 
-    pub fn run() {
-    }
+pub fn run() {
 }
 
 #[cfg(test)]
 mod tests {
-    use super::app_mod::*;
+    use super::*;
 
     #[test]
     fn unit_test() {
