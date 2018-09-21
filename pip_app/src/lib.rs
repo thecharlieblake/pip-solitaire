@@ -1,13 +1,7 @@
 extern crate pip_core;
 
+use pip_core::gen_game;
+
 pub fn run() {
-}
-
-#[cfg(test)]
-mod tests {
-    use super::*;
-
-    #[test]
-    fn unit_test() {
-    }
+    println!("{}", gen_game())
 }
