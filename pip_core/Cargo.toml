@@ -5,3 +5,7 @@ version = "0.1.0"
 authors = ["thecharlesblake <thecharlesblake@live.co.uk>"]
 
 [dependencies]
+
+quick-error = "1.2.2"
+lazy_static = "1.1.0"
+bimap = "0.1.5"
