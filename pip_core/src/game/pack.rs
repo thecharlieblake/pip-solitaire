@@ -1,6 +1,6 @@
 use std::fmt;
 use bimap::BiMap;
-use std::slice::Iter;
+use std::slice::{Iter, IterMut};
 use serde::ser::{Serialize, Serializer};
 use serde::de::{self, Deserialize, Deserializer, Visitor};
 use std::str::FromStr;
@@ -12,17 +12,21 @@ pub struct Deck (Vec<Card>);
 
 impl Default for Deck {
     fn default() -> Self {
-        let cards : Vec<Card> = (1..=13)
+        Self::new(Rank(13))
+    }
+}
+
+impl Deck {
+    pub fn new(max_rank: Rank) -> Self {
+        let cards : Vec<Card> = (1..=max_rank.0)
             .flat_map(|r| Suit::iterator()
                 .map(move |s| Card{rank: Rank(r), suit: *s})
             ).collect();
         Deck(cards)
     }
-}
 
-impl Deck {
-    pub fn shuffled(seed: u64) -> Self {
-        let mut d = Self::default();
+    pub fn shuffled(seed: u64, max_rank: Rank) -> Self {
+        let mut d = Self::new(max_rank);
         Isaac64Rng::seed_from_u64(seed).shuffle(&mut d.0);
         d
     }
@@ -37,6 +41,10 @@ impl Deck {
 
     pub fn iter(&self) -> Iter<Card> {
         self.0.iter()
+    }
+
+    pub fn iter_mut(&mut self) -> IterMut<Card> {
+        self.0.iter_mut()
     }
 }
 

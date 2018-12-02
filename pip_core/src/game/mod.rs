@@ -26,12 +26,19 @@ impl Game {
         (0..Self::default_tableau_count()).map(|_| Default::default()).collect()
     }
 
-    pub fn deal(deck: Deck) -> Self {
+    pub fn deal(mut deck: Deck) -> Self {
         let foundations = Self::default_foundations();
-        let tableau_piles = (&deck.iter().chunks(deck.len() / Self::default_tableau_count()))
-            .into_iter()
-            .map(|chunk| Pile (chunk.cloned().collect_vec()) )
-            .collect_vec();
+        let mut tableau_piles = Self::default_tableau_piles();
+
+        let mut deck_it = deck.iter_mut();
+        'l: loop {
+            for pile in tableau_piles.iter_mut() {
+                match deck_it.next() {
+                    Some(card) => pile.place(*card),
+                    None => break 'l,
+                }
+            }
+        }
 
         Self {
             foundations,
