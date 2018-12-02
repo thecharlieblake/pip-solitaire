@@ -25,3 +25,8 @@ pub fn gen_game(seed: u64) -> Game {
     let deck = Deck::shuffled(seed);
     Game::deal(deck)
 }
+
+pub fn gen_default_game() -> Game {
+    let deck = Deck::default();
+    Game::deal(deck)
+}
