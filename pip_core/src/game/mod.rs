@@ -1,5 +1,4 @@
 use self::pack::{ Deck, Card };
-use itertools::Itertools;
 
 pub mod pack;
 
@@ -73,10 +72,8 @@ mod tests {
 
     #[test]
     fn default_game() {
-
-
         let game = Game::deal(Deck::default());
-        let yaml_str = utils::yaml::to_pretty_string(&game).unwrap();
+        let yaml_str = utils::yaml::to_pretty_string(&game);
 
         assert_eq!(game, serde_yaml::from_str(&yaml_str).unwrap());
     }
