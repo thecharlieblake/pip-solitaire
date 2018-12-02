@@ -26,6 +26,6 @@ tableau_piles:
   - [QC, QD, QS, QH]
   - [KC, KD, KS, KH]
 ",
-        utils::yaml::to_pretty_string(&gen_default_game()).unwrap()
+        utils::yaml::to_pretty_string(&gen_default_game())
     )
 }

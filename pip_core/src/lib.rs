@@ -13,16 +13,19 @@ extern crate regex;
 extern crate rand;
 
 use game::Game;
-use game::pack::Deck;
+use game::pack::{Deck, Rank};
 
 pub mod game;
 pub mod utils;
 
-///
-/// Generates a game from a sorted deck
-///
-pub fn gen_game(seed: u64) -> Game {
-    let deck = Deck::shuffled(seed);
+
+pub struct Options {
+    pub seed: u64,
+    pub max_rank: Rank,
+}
+
+pub fn gen_game(ops: Options) -> Game {
+    let deck = Deck::shuffled(ops.seed, ops.max_rank);
     Game::deal(deck)
 }
 

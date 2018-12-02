@@ -100,10 +100,10 @@ pub mod yaml {
         format!("{}", out)
     }
 
-    pub fn to_pretty_string<T: ?Sized>(value: &T) -> serde_yaml::Result<String>
+    pub fn to_pretty_string<T: ?Sized>(value: &T) -> String
         where T: Serialize,
     {
-        Ok(prettify(&(serde_yaml::to_string(value)?)))
+        prettify(&(serde_yaml::to_string(value).unwrap()))
     }
 }
 

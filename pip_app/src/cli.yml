@@ -7,6 +7,15 @@ args:
     short: d
     long: deal
     value_name: SEED
+    default_value: '0'
     required: true
     help: Generates a deal based on a random seed
+    takes_value: true
+- max-rank:
+    short: r
+    long: max-rank
+    value_name: RANK(A-K)
+    default_value: K
+    required: false
+    help: The maximum rank of the game
     takes_value: true
