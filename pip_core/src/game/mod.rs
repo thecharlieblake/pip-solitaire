@@ -1,7 +1,5 @@
 use self::pack::{ Deck, Card };
-use serde_yaml;
 use itertools::Itertools;
-use utils;
 
 pub mod pack;
 
@@ -63,9 +61,13 @@ impl Pile {
 #[cfg(test)]
 mod tests {
     use super::*;
+    use utils;
+    use serde_yaml;
 
     #[test]
     fn default_game() {
+
+
         let game = Game::deal(Deck::default());
         let yaml_str = utils::yaml::to_pretty_string(&game).unwrap();
 
