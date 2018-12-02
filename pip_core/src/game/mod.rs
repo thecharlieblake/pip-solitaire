@@ -1,4 +1,5 @@
 use self::pack::{ Deck, Card };
+use std::collections::LinkedList;
 
 pub mod pack;
 
@@ -56,11 +57,11 @@ impl Default for Game {
 }
 
 #[derive(Clone, PartialEq, Eq, Debug, Hash, Default, Serialize, Deserialize)]
-pub struct Pile (Vec<Card>);
+pub struct Pile (LinkedList<Card>);
 
 impl Pile {
     fn place(&mut self, card: Card) {
-        self.0.push(card)
+        self.0.push_back(card)
     }
 }
 
