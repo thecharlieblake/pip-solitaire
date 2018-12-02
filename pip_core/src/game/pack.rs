@@ -1,28 +1,41 @@
 use std::fmt;
-use std::error::Error;
-use std::str::FromStr;
 use bimap::BiMap;
 use std::slice::Iter;
+use serde::ser::{Serialize, Serializer};
+use serde::de::{self, Deserialize, Deserializer, Visitor};
+use serde_yaml;
+use std::str::FromStr;
 
 
-#[derive(Clone, PartialEq, Eq, PartialOrd, Debug, Hash)]
-pub struct Deck {
-    cards: Vec<Card>
+#[derive(Clone, PartialEq, Eq, PartialOrd, Debug, Hash, Deserialize, Serialize)]
+pub struct Deck (Vec<Card>);
+
+impl Default for Deck {
+    fn default() -> Self {
+        let cards : Vec<Card> = (1..=13)
+            .flat_map(|r| Suit::iterator()
+                .map(move |s| Card{rank: Rank(r), suit: *s})
+            ).collect();
+        Deck(cards)
+    }
 }
 
 impl Deck {
-    pub fn sorted() -> Self {
-        let cards : Vec<Card> =
-            Suit::iterator()
-                .flat_map(|s| (1..=13)
-                    .map(move |r| Card{rank: Rank(r), suit: *s})
-                )
-                .collect();
-        Self {cards}
+    pub fn is_empty(&self) -> bool {
+        self.0.is_empty()
+    }
+
+    pub fn len(&self) -> usize {
+        self.0.len()
+    }
+
+    pub fn iter(&self) -> Iter<Card> {
+        self.0.iter()
     }
 }
 
 // Cards //
+
 
 #[derive(Clone, Copy, PartialEq, PartialOrd, Eq, Debug, Hash)]
 pub struct Card {
@@ -30,22 +43,59 @@ pub struct Card {
     suit: Suit,
 }
 
-impl FromStr for Card {
-    type Err = Box<Error>;
+impl fmt::Display for Card {
+    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+        write!(f, "{}{}", self.rank, self.suit)
+    }
+}
 
-    fn from_str(s: &str) -> Result<Self, Self::Err> {
+impl FromStr for Card {
+    type Err = ();
+
+    fn from_str(s: &str) -> Result<Self, Self::Err>  {
         let mut s_iter = s.chars();
-        let rank_str = s_iter.next().ok_or("missing card rank")?.to_string();
-        let suit_str = s_iter.next().ok_or("missing card suit")?.to_string();
+        let rank_str = s_iter.next().ok_or(())?.to_string();
+        let suit_str = s_iter.next().ok_or(())?.to_string();
+
         let rank = Rank::from_str(&rank_str)?;
         let suit = Suit::from_str(&suit_str)?;
+
         Ok(Card { rank, suit })
     }
 }
 
-impl fmt::Display for Card {
-    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
-        write!(f, "{}{}", self.rank, self.suit)
+impl Serialize for Card {
+    fn serialize<S>(&self, serializer: S) -> Result<S::Ok, S::Error>
+        where S: Serializer {
+        serializer.serialize_str(&self.to_string())
+    }
+}
+
+struct CardStrVisitor;
+
+impl<'de> Visitor<'de> for CardStrVisitor {
+    type Value = Card;
+
+    fn expecting(&self, formatter: &mut fmt::Formatter) -> fmt::Result {
+        formatter.write_str("a string representing a rank")
+    }
+
+    fn visit_str<E>(self, v: &str) -> Result<Self::Value, E>
+        where E: de::Error {
+
+        match Self::Value::from_str(v) {
+            Ok(r) => Ok(r),
+            Err(()) => Err(de::Error::custom("failed to deserialize card")),
+        }
+    }
+}
+
+impl<'de> Deserialize<'de> for Card {
+    fn deserialize<D>(deserializer: D) -> Result<Self, D::Error>
+        where
+            D: Deserializer<'de>,
+    {
+        deserializer.deserialize_str(CardStrVisitor)
     }
 }
 
@@ -76,32 +126,58 @@ lazy_static! {
     };
 }
 
-quick_error! {
-    #[derive(Debug)]
-    pub enum ParseRankError {
-        InvalidRank {
-            description("rank is not valid")
+impl fmt::Display for Rank {
+    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+        match RANKMAP.get_by_right(&self) {
+            Some(s) => write!(f, "{}", s),
+            _ => panic!(),
         }
     }
 }
 
 impl FromStr for Rank {
-    type Err = ParseRankError;
+    type Err = ();
 
     fn from_str(s: &str) -> Result<Self, Self::Err>  {
         match RANKMAP.get_by_left(&s) {
-            Some(r) => Ok(*r),
-            None => Err(ParseRankError::InvalidRank),
+            Some(s) => Ok(*s),
+            None => Err(()),
         }
     }
 }
 
-impl fmt::Display for Rank {
-    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
-        match RANKMAP.get_by_right(&self) {
-            Some(s) => write!(f, "{}", s),
-            None => panic!("Invalid rank: {}", self.0),
+impl Serialize for Rank {
+    fn serialize<S>(&self, serializer: S) -> Result<S::Ok, S::Error>
+        where S: Serializer {
+        serializer.serialize_str(&self.to_string())
+    }
+}
+
+struct RankStrVisitor;
+
+impl<'de> Visitor<'de> for RankStrVisitor {
+    type Value = Rank;
+
+    fn expecting(&self, formatter: &mut fmt::Formatter) -> fmt::Result {
+        formatter.write_str("a string representing a rank")
+    }
+
+    fn visit_str<E>(self, v: &str) -> Result<Self::Value, E>
+        where E: de::Error {
+
+        match Self::Value::from_str(v) {
+            Ok(r) => Ok(r),
+            Err(()) => Err(de::Error::custom("failed to deserialize rank")),
         }
+    }
+}
+
+impl<'de> Deserialize<'de> for Rank {
+    fn deserialize<D>(deserializer: D) -> Result<Self, D::Error>
+        where
+            D: Deserializer<'de>,
+    {
+        deserializer.deserialize_str(RankStrVisitor)
     }
 }
 
@@ -126,32 +202,11 @@ lazy_static! {
     };
 }
 
-
-quick_error! {
-    #[derive(Debug)]
-    pub enum ParseSuitError {
-        InvalidSuit {
-            description("Suit is invalid")
-        }
-    }
-}
-
 impl Suit {
     pub fn iterator() -> Iter<'static, Suit> {
         use self::Suit::*;
         static SUITS: [Suit;  4] = [Clubs, Diamonds, Spades, Hearts];
         SUITS.into_iter()
-    }
-}
-
-impl FromStr for Suit {
-    type Err = ParseSuitError;
-
-    fn from_str(s: &str) -> Result<Self, Self::Err>  {
-        match SUITMAP.get_by_left(&s) {
-            Some(s) => Ok(*s),
-            None => Err(ParseSuitError::InvalidSuit),
-        }
     }
 }
 
@@ -164,19 +219,64 @@ impl fmt::Display for Suit {
     }
 }
 
+impl FromStr for Suit {
+    type Err = ();
+
+    fn from_str(s: &str) -> Result<Self, Self::Err>  {
+        match SUITMAP.get_by_left(&s) {
+            Some(s) => Ok(*s),
+            None => Err(()),
+        }
+    }
+}
+
+impl Serialize for Suit {
+    fn serialize<S>(&self, serializer: S) -> Result<S::Ok, S::Error>
+        where S: Serializer {
+        serializer.serialize_str(&self.to_string())
+    }
+}
+
+struct SuitStrVisitor;
+
+impl<'de> Visitor<'de> for SuitStrVisitor {
+    type Value = Suit;
+
+    fn expecting(&self, formatter: &mut fmt::Formatter) -> fmt::Result {
+        formatter.write_str("a string representing a rank")
+    }
+
+    fn visit_str<E>(self, v: &str) -> Result<Self::Value, E>
+        where E: de::Error {
+
+        match Self::Value::from_str(v) {
+            Ok(r) => Ok(r),
+            Err(()) => Err(de::Error::custom("failed to deserialize suit")),
+        }
+    }
+}
+
+impl<'de> Deserialize<'de> for Suit {
+    fn deserialize<D>(deserializer: D) -> Result<Self, D::Error>
+        where
+            D: Deserializer<'de>,
+    {
+        deserializer.deserialize_str(SuitStrVisitor)
+    }
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
 
-    #[test]
-    fn sorted_deck() {
-        assert_eq!(Deck { cards: vec![
-            "AC", "2C", "3C", "4C", "5C", "6C", "7C", "8C", "9C", "TC", "JC", "QC", "KC",
-            "AD", "2D", "3D", "4D", "5D", "6D", "7D", "8D", "9D", "TD", "JD", "QD", "KD",
-            "AS", "2S", "3S", "4S", "5S", "6S", "7S", "8S", "9S", "TS", "JS", "QS", "KS",
-            "AH", "2H", "3H", "4H", "5H", "6H", "7H", "8H", "9H", "TH", "JH", "QH", "KH",
-        ].iter().map(|c| c.parse().unwrap()).collect()},
-        Deck::sorted());
+   #[test]
+    fn default_is_sorted_deck() {
+        let s : &str =
+            "[AC, 2C, 3C, 4C, 5C, 6C, 7C, 8C, 9C, TC, JC, QC, KC,
+            AD, 2D, 3D, 4D, 5D, 6D, 7D, 8D, 9D, TD, JD, QD, KD,
+            AS, 2S, 3S, 4S, 5S, 6S, 7S, 8S, 9S, TS, JS, QS, KS,
+            AH, 2H, 3H, 4H, 5H, 6H, 7H, 8H, 9H, TH, JH, QH, KH]";
+        assert_eq!(Deck::default(), serde_yaml::from_str(s).unwrap());
     }
 
     #[test]
@@ -193,6 +293,7 @@ mod tests {
             let val = c.1;
 
             assert_eq!(val, str.parse().unwrap());
+            assert_eq!(val, serde_yaml::from_str(&str).unwrap());
             assert_eq!(str, val.to_string());
         }
     }
@@ -218,6 +319,7 @@ mod tests {
             let val = Rank(r.1);
 
             assert_eq!(val, str.parse().unwrap());
+            assert_eq!(val, serde_yaml::from_str(&str).unwrap());
             assert_eq!(str, val.to_string());
         }
     }
@@ -235,7 +337,9 @@ mod tests {
             let val = s.1;
 
             assert_eq!(val, str.parse().unwrap());
+            assert_eq!(val, serde_yaml::from_str(&str).unwrap());
             assert_eq!(str, val.to_string());
+            assert_eq!(format!("---\n{}", &str), serde_yaml::to_string(&val).unwrap());
         }
     }
 }

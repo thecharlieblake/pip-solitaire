@@ -3,19 +3,23 @@
 //!
 //! Contains only features relevant to solitaire, *not* search.
 //!
-#[macro_use] extern crate quick_error;
 #[macro_use] extern crate lazy_static;
+#[macro_use] extern crate serde_derive;
+extern crate serde_yaml;
+extern crate serde;
 extern crate bimap;
-
-mod game;
+extern crate itertools;
+extern crate regex;
 
 use game::Game;
-use game::pack::Deck;
+
+pub mod game;
+pub mod utils;
 
 ///
 /// Generates a game from a sorted deck
 ///
 pub fn gen_game() -> Game {
-    let deck = Deck::sorted();
+    let deck = Default::default();
     Game::deal(deck)
 }
