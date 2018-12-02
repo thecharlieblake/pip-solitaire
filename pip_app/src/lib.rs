@@ -1,7 +1,7 @@
 extern crate pip_core;
 
-use pip_core::gen_game;
+use pip_core::{utils, gen_game};
 
 pub fn run() {
-    println!("{}", gen_game())
+    println!("{}", utils::yaml::to_pretty_string(&gen_game()).unwrap())
 }
