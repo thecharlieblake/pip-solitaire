@@ -1,0 +1,12 @@
+name: pip-solitaire
+version: "1.0"
+author: Charlie Blake <thecharlesblake@live.co.uk>
+about: A solver for solitaire games
+args:
+- deal:
+    short: d
+    long: deal
+    value_name: SEED
+    required: true
+    help: Generates a deal based on a random seed
+    takes_value: true

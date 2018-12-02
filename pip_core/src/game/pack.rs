@@ -4,6 +4,7 @@ use std::slice::Iter;
 use serde::ser::{Serialize, Serializer};
 use serde::de::{self, Deserialize, Deserializer, Visitor};
 use std::str::FromStr;
+use rand::{Isaac64Rng, SeedableRng, Rng};
 
 
 #[derive(Clone, PartialEq, Eq, PartialOrd, Debug, Hash, Deserialize, Serialize)]
@@ -20,6 +21,12 @@ impl Default for Deck {
 }
 
 impl Deck {
+    pub fn shuffled(seed: u64) -> Self {
+        let mut d = Self::default();
+        Isaac64Rng::seed_from_u64(seed).shuffle(&mut d.0);
+        d
+    }
+
     pub fn is_empty(&self) -> bool {
         self.0.is_empty()
     }
