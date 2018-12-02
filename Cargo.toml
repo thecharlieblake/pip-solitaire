@@ -1,5 +1,6 @@
 [workspace]
 
 members = [
-    "pip_app"
+    "pip_app",
+    "pip_core",
 ]
