@@ -8,3 +8,4 @@ authors = ["thecharlesblake <thecharlesblake@live.co.uk>"]
 
 pip_core = { path = "../pip_core" }
 clap = {version = "2.32", features = ["yaml"]}
+petgraph = "0.4"
